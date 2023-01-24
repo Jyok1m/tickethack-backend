@@ -9,8 +9,7 @@ const { checkBody } = require("../modules/checkBody");
 // Route to GET all the trains available depending on users' inputs:
 
 router.get("/", (req, res) => {
-  const { departure } = req.body;
-  const { arrival } = req.body;
+  const { departure, arrival } = req.body;
   const inputDate = req.body.date;
   const date = moment(
     new Date(`${inputDate.slice(6)}-${inputDate.slice(3, 5)}-${inputDate.slice(0, 2)}`)
@@ -38,10 +37,7 @@ router.get("/", (req, res) => {
 // Route to POST the selected train to the User DB:
 
 router.post("/book", (req, res) => {
-  const { departure } = req.body;
-  const { arrival } = req.body;
-  const { date } = req.body;
-  const { price } = req.body;
+  const { departure, arrival, date, price } = req.body;
 
   const newTrainToCart = new Cart({ departure, arrival, date, price });
 
