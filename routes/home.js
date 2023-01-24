@@ -8,14 +8,11 @@ const { checkBody } = require("../modules/checkBody");
 
 // Route to GET all the trains available depending on users' inputs:
 
-router.get("/", (req, res) => {
+router.post("/", (req, res) => {
   const { departure, arrival } = req.body;
-  const inputDate = req.body.date;
-  const date = moment(
-    new Date(`${inputDate.slice(6)}-${inputDate.slice(3, 5)}-${inputDate.slice(0, 2)}`)
-  ).format("YYYY-MM-DD");
+  const date = req.body.date;
 
-  if (!checkBody(req.body, ["departure", "arrival"])) {
+  if (!checkBody(req.body, ["departure", "arrival", "date"])) {
     res.json({ result: false, error: "Missing the city of departure or arrival" });
     return;
   }
