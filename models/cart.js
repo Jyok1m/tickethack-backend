@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
-const trainSchema = mongoose.Schema({
+const cartSchema = mongoose.Schema({
   departure: String,
   arrival: String,
   date: Date,
   price: Number,
 });
 
-const Train = mongoose.model("trains", trainSchema);
+const Cart = mongoose.model("cart", cartSchema);
 
-module.exports = Train;
+module.exports = Cart;

@@ -4,5 +4,5 @@ const connectionString =
 
 mongoose
   .connect(connectionString, { connectTimeoutMS: 2000 })
-  .then(() => console.log("Succesfully connected to Tickehack Database"))
+  .then(() => console.log("Succesfully connected to the Tickethack Database"))
   .catch((errorType) => console.error(errorType));

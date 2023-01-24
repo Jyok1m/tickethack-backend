@@ -1,8 +1,8 @@
 var express = require("express");
 var router = express.Router();
 require("../models/connection");
-const Trains = require("../models/trains");
-const fetch = require("node-fetch");
+const Cart = require("../models/cart");
+const Train = require("../models/trains");
 const moment = require("moment");
 const { checkBody } = require("../modules/checkBody");
 
@@ -21,11 +21,11 @@ router.get("/", (req, res) => {
     return;
   }
 
-  Trains.findOne({ departure, arrival }).then((data) => {
+  Train.findOne({ departure, arrival }).then((data) => {
     if (data === null) {
       res.json({ result: false, error: "Woops... No train has been found at this date !" });
     } else {
-      Trains.find({ departure, arrival }).then((data) => {
+      Train.find({ departure, arrival }).then((data) => {
         const trainList = data.filter(
           (trainData) => moment(trainData.date).format("YYYY-MM-DD") === date
         );
@@ -33,6 +33,19 @@ router.get("/", (req, res) => {
       });
     }
   });
+});
+
+// Route to POST the selected train to the User DB:
+
+router.post("/book", (req, res) => {
+  const { departure } = req.body;
+  const { arrival } = req.body;
+  const { date } = req.body;
+  const { price } = req.body;
+
+  const newTrainToCart = new Cart({ departure, arrival, date, price });
+
+  newTrainToCart.save().then(() => res.json({ result: true }));
 });
 
 module.exports = router;
