@@ -24,6 +24,17 @@ router.delete("/delete/:_id", (req, res) => {
 
 // Route to push from cart to bookings:
 
-
+router.post("/purchase", (req, res) => {
+  Cart.find().then((cartContent) => {
+    for (const train of cartContent) {
+      const { departure, arrival, date, price } = train;
+      const newBooking = new Booking({ departure, arrival, date, price });
+      newBooking.save().then(() => console.log("Trip saved"));
+    }
+  });
+  Cart.deleteMany().then(() => {
+    res.json({ result: true });
+  });
+});
 
 module.exports = router;
