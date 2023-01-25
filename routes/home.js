@@ -9,11 +9,13 @@ const { checkBody } = require("../modules/checkBody");
 // Route to GET all the trains available depending on users' inputs:
 
 router.post("/", (req, res) => {
-  const { departure, arrival } = req.body;
-  const date = req.body.date;
+  const { departure, arrival, date } = req.body;
 
-  if (!checkBody(req.body, ["departure", "arrival", "date"])) {
+  if (!checkBody(req.body, ["departure", "arrival"])) {
     res.json({ result: false, error: "Missing the city of departure or arrival" });
+    return;
+  } else if (!checkBody(req.body, ["date"])) {
+    res.json({ result: false, error: "Missing the date" });
     return;
   }
 
@@ -33,12 +35,12 @@ router.post("/", (req, res) => {
 
 // Route to POST the selected train to the User DB:
 
-router.post("/book", (req, res) => {
-  const { departure, arrival, date, price } = req.body;
-
-  const newTrainToCart = new Cart({ departure, arrival, date, price });
-
-  newTrainToCart.save().then(() => res.json({ result: true }));
+router.post("/book/:id", (req, res) => {
+  const { id } = req.params;
+  Train.findById(id).then((data) => {
+    const { departure, arrival, date, price } = data;
+    const newTrainToCart = new Cart({ departure, arrival, date, price });
+    newTrainToCart.save().then(() => res.json({ result: true }));
+  });
 });
-
 module.exports = router;
