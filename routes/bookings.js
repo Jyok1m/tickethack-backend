@@ -6,7 +6,11 @@ const Booking = require("../models/bookings");
 
 router.get("/", (req, res) => {
   Booking.find().then((allBookings) => {
-    res.json({ allBookings });
+    if (allBookings.length != 0) {
+      res.json({ result: true, allBookings });
+    } else {
+      res.json({ result: false });
+    }
   });
 });
 

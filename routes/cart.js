@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
     if (cartData.length != 0) {
       res.json({ result: true, cartData });
     } else {
-      res.json({ result: false, error: "No trip available" });
+      res.json({ result: false });
     }
   });
 });
@@ -27,16 +27,16 @@ router.delete("/delete/:id", (req, res) => {
 
 // Route to push from cart to bookings:
 
-router.get("/purchase", (req, res) => {
+router.post("/purchase", (req, res) => {
   Cart.find().then((cartContent) => {
     for (const train of cartContent) {
       const { departure, arrival, date, price } = train;
       const newBooking = new Booking({ departure, arrival, date, price });
-      newBooking.save().then(() => console.log("Trip saved"));
+      newBooking.save().then(() => res.json({ result: true }));
     }
   });
   Cart.deleteMany().then(() => {
-    res.json({ result: true });
+    return;
   });
 });
 
