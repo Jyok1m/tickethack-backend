@@ -8,23 +8,26 @@ const Booking = require("../models/bookings");
 
 router.get("/", (req, res) => {
   Cart.find().then((cartData) => {
-    res.json({ result: true, cartData });
+    if (cartData.length != 0) {
+      res.json({ result: true, cartData });
+    } else {
+      res.json({ result: false, error: "No trip available" });
+    }
   });
 });
 
 // Route to delete a train in the cart:
 
-router.delete("/delete/:_id", (req, res) => {
-  const idToDelete = req.params._id;
-  console.log(idToDelete);
-  Cart.findByIdAndDelete(idToDelete).then(() => {
+router.delete("/delete/:id", (req, res) => {
+  const { id } = req.params;
+  Cart.findByIdAndDelete(id).then(() => {
     res.json({ result: true });
   });
 });
 
 // Route to push from cart to bookings:
 
-router.post("/purchase", (req, res) => {
+router.get("/purchase", (req, res) => {
   Cart.find().then((cartContent) => {
     for (const train of cartContent) {
       const { departure, arrival, date, price } = train;
