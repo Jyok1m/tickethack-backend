@@ -10,13 +10,19 @@ const { checkBody } = require("../modules/checkBody");
 router.post("/", (req, res) => {
   const { departure, arrival, date } = req.body;
 
-  if (!checkBody(req.body, ["departure", "arrival"])) {
-    res.json({ result: false, error: "Missing the city of departure or arrival" });
+  // Check pour determiner si les champs ont été bien remplis:
+  if (!checkBody(req.body, ["departure", "arrival", "date"])) {
+    res.json({ result: false, error: "Please fill in the query form first !" });
+    return;
+  } else if (!checkBody(req.body, ["departure", "arrival"])) {
+    res.json({ result: false, error: "Please enter the city of departure or arrival !" });
     return;
   } else if (!checkBody(req.body, ["date"])) {
-    res.json({ result: false, error: "Missing the date" });
+    res.json({ result: false, error: "Please select a date !" });
     return;
   }
+
+  // TODO: Auto-conversion du nom des villes si entrées en lower case:
 
   Train.findOne({ departure, arrival }).then((data) => {
     if (data === null) {
