@@ -33,7 +33,6 @@ router.post("/search", async (req, res) => {
   const trainList = await fetchTrainList(apiDeparture, apiArrival, date, time);
 
   // TODO: Création de tableau dans lequel push les trains correspondants
-  
   // TODO: Ajout de la boucle pour afficher les trains
 
   res.json({ result: true, trainList });
