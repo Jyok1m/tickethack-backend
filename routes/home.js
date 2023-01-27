@@ -5,6 +5,43 @@ const Train = require("../models/trains");
 const moment = require("moment");
 const { checkBody } = require("../modules/checkBody");
 const { toTitleCase } = require("../modules/toTitleCase");
+const { fetchCityCode } = require("../modules/fetchCityCode");
+const { fetchTrainList } = require("../modules/fetchTrainList");
+
+router.post("/search", async (req, res) => {
+  // Check if the fields have been filled:
+
+  const { date } = req.body;
+  const departure = toTitleCase(req.body.departure);
+  const arrival = toTitleCase(req.body.arrival);
+
+  if (!checkBody(req.body, ["departure", "arrival"])) {
+    res.json({ result: false, error: "Please enter the city of departure and arrival !" });
+    return;
+  } else if (!checkBody(req.body, ["date"])) {
+    res.json({ result: false, error: "Please select a date !" });
+    return;
+  }
+
+  // Fetch the DEPARTURE and ARRIVAL city codes from the Gov API:
+
+  const apiDeparture = await fetchCityCode(departure);
+  const apiArrival = await fetchCityCode(arrival);
+
+  res.json({ apiDeparture, apiArrival });
+});
+
+// Fetch the SNCF Data:
+
+router.get("/", (req, res) => {
+  fetch(
+    "https://api.sncf.com/v1/coverage/sncf/journeys?from=admin:fr:75056&to=admin:fr:69123&datetime=20230129T150000",
+    { headers: { Authorization: `Basic ${process.env.AUTH_KEY}` } }
+  )
+    .then((response) => response.json())
+    .then((response) => res.json({ response }))
+    .catch((err) => console.error(err));
+});
 
 // Route to GET all the trains available depending on users' inputs:
 
@@ -25,8 +62,6 @@ router.post("/", (req, res) => {
     res.json({ result: false, error: "Please select a date !" });
     return;
   }
-
-  // TODO: Auto-conversion du nom des villes si entrées en lower case:
 
   Train.findOne({ departure, arrival }).then((data) => {
     if (data === null) {
