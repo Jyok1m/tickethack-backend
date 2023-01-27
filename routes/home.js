@@ -4,18 +4,22 @@ const Cart = require("../models/cart");
 const Train = require("../models/trains");
 const moment = require("moment");
 const { checkBody } = require("../modules/checkBody");
+const { toTitleCase } = require("../modules/toTitleCase");
 
 // Route to GET all the trains available depending on users' inputs:
 
 router.post("/", (req, res) => {
-  const { departure, arrival, date } = req.body;
+  const { date } = req.body;
+
+  // Convertion des noms des villes en Title case pour matching:
+
+  const departure = toTitleCase(req.body.departure);
+  const arrival = toTitleCase(req.body.arrival);
 
   // Check pour determiner si les champs ont été bien remplis:
-  if (!checkBody(req.body, ["departure", "arrival", "date"])) {
-    res.json({ result: false, error: "Please fill in the query form first !" });
-    return;
-  } else if (!checkBody(req.body, ["departure", "arrival"])) {
-    res.json({ result: false, error: "Please enter the city of departure or arrival !" });
+
+  if (!checkBody(req.body, ["departure", "arrival"])) {
+    res.json({ result: false, error: "Please enter the city of departure and arrival !" });
     return;
   } else if (!checkBody(req.body, ["date"])) {
     res.json({ result: false, error: "Please select a date !" });
