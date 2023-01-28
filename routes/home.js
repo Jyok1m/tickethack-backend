@@ -18,32 +18,56 @@ router.post("/search", async (req, res) => {
   if (!checkBody(req.body, ["departure", "arrival"])) {
     res.json({ result: false, error: "Please enter the city of departure and arrival !" });
     return;
-  } else if (!checkBody(req.body, ["date"])) {
-    res.json({ result: false, error: "Please select a date !" });
+  } else if (!checkBody(req.body, ["date", "time"])) {
+    res.json({ result: false, error: "Please select a date and time !" });
     return;
   }
 
   // Fetch the DEPARTURE and ARRIVAL city codes from the Gov API:
-
   const apiDeparture = await fetchCityCode(departure);
   const apiArrival = await fetchCityCode(arrival);
 
   // Fetch the SNCF Data from the API:
-
   const trainList = await fetchTrainList(apiDeparture, apiArrival, date, time);
 
-  // TODO: Création de tableau dans lequel push les trains correspondants
+  // Reception de la réponse:
+  const { journeys } = await trainList;
+
+  // Récupération des infos de base du prochain trajet A => B en fonction des paramètres utilisateurs de vitesse:
+  const { itineraryType } = req.body; // "best", "rapid", "fastest"
+  const train = await journeys.find(
+    (train) => train.type === itineraryType || train.type === "best"
+  );
+  const { arrival_date_time, departure_date_time, duration } = await train;
+
+  // Génération aléatoire des prix (entre 0€ et 200€):
+  const fare = Math.floor(Math.random() * 200);
+
+  // Récupération de la liste des arrêts majeurs entre A => B:
+  const { sections } = await train;
+  const stopList = await sections.filter(
+    (section) => section.duration > 0 && section.from && section.from.name != section.to.name
+  );
+  const itinerary = [];
+  for (let stop of stopList) {
+    itinerary.push({
+      from: stop.from.name,
+      to: stop.to.name,
+      section_departure_date_time: stop.departure_date_time,
+      section_arrival_date_time: stop.arrival_date_time,
+      section_duration: stop.duration,
+    });
+  }
+
   // TODO: Ajout de la boucle pour afficher les trains
 
-  res.json({ result: true, trainList });
+  res.json({ result: true, arrival_date_time, departure_date_time, duration, fare, itinerary });
+  // res.json({ result: true, journeys, stopList });
 });
-
-
 
 // Route to GET all the trains available depending on users' inputs:
 
 router.post("/", (req, res) => {
- 
   Train.findOne({ departure, arrival }).then((data) => {
     if (data === null) {
       res.json({ result: false, error: "Woops... No train has been found at this date !" });

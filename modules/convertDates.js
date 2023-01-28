@@ -1,9 +1,9 @@
 const moment = require("moment");
 
 const toJoinedIsoDateAndTime = (normalIsoDate, time) => {
-  const joinedDate = moment(new Date()).format("YYYYMMDDT");
+  const joinedDate = moment(new Date(normalIsoDate)).format("YYYYMMDDT");
   const joinedTime = time.split(":").join("");
-  joinedDateAndTime = joinedDate + joinedTime + "00";
+  const joinedDateAndTime = joinedDate + joinedTime + "00";
   return joinedDateAndTime;
 };
 
