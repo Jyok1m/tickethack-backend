@@ -12,4 +12,11 @@ const toNormalIsoDate = (joinedIsoDate) => {
   return date;
 };
 
-module.exports = { toJoinedIsoDateAndTime, toNormalIsoDate };
+const addOneToDepartureTime = (joinedIsoDate) => {
+  const updatedTime = moment(new Date(toNormalIsoDate(joinedIsoDate)).getTime() + 60000).format(
+    "HH:mm"
+  );
+  return updatedTime;
+};
+
+module.exports = { toJoinedIsoDateAndTime, toNormalIsoDate, addOneToDepartureTime };

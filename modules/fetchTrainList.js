@@ -1,4 +1,4 @@
-const { toJoinedIsoDateAndTime } = require("./convertDates");
+const { toJoinedIsoDateAndTime } = require("./convertDatesAndTimes");
 
 const fetchTrainList = async (departureCityCode, arrivalCityCode, departureDate, departureTime) => {
   let response = await fetch(
