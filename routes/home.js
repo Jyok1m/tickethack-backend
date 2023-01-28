@@ -40,7 +40,7 @@ router.post("/search", async (req, res) => {
     const trainList = await fetchTrainList(apiDeparture, apiArrival, date, time);
 
     // Reception de la réponse:
-    const { journeys } = await trainList;
+    const journeys = await trainList;
 
     // Récupération des infos de base du prochain trajet A => B en fonction des paramètres utilisateurs de vitesse:
     const train = await journeys.find(
