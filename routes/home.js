@@ -39,11 +39,8 @@ router.post("/search", async (req, res) => {
     // Fetch the SNCF Data from the API:
     const trainList = await fetchTrainList(apiDeparture, apiArrival, date, time);
 
-    // Reception de la réponse:
-    const journeys = await trainList;
-
     // Récupération des infos de base du prochain trajet A => B en fonction des paramètres utilisateurs de vitesse:
-    const train = await journeys.find(
+    const train = await trainList.find(
       (train) => train.type === itineraryType || train.type === "best"
     );
     const { departure_date_time, arrival_date_time, duration } = await train;
