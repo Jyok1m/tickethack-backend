@@ -39,11 +39,12 @@ router.post("/search", async (req, res) => {
     // Fetch the SNCF Data from the API:
     const trainList = await fetchTrainList(apiDeparture, apiArrival, date, time);
 
+    // Reception de la réponse:
+    const { journeys } = trainList;
+
     // Récupération des infos de base du prochain trajet A => B en fonction des paramètres utilisateurs de vitesse:
-    const train = await trainList.find(
-      (train) => train.type === itineraryType || train.type === "best"
-    );
-    const { departure_date_time, arrival_date_time, duration } = await train;
+    const train = journeys.find((train) => train.type === itineraryType || train.type === "best");
+    const { departure_date_time, arrival_date_time, duration } = train;
     const departureDate = moment(departure_date_time).format("YYYY-MM-DD");
     const departureTime = moment(departure_date_time).format("HH:mm");
     const arrivalDate = moment(arrival_date_time).format("YYYY-MM-DD");
@@ -54,8 +55,8 @@ router.post("/search", async (req, res) => {
     const fare = Math.floor(Math.random() * 200);
 
     // Récupération de la liste des arrêts majeurs entre A => B:
-    const { sections } = await train;
-    const stopList = await sections.filter(
+    const { sections } = train;
+    const stopList = sections.filter(
       (section) =>
         section.transfer_type != "walking" &&
         section.duration > 0 &&
